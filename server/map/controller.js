@@ -6,8 +6,9 @@ var map = new Map();
 
 app
     .get('/state', (req, res) => res.send(map))
-    .post('/marker/create', (req, res) => res.send())
-    .post('/marker/edit', (res, req) => res.send())
+    .post('/add', (req, res) => res.send(map.addMarker(req.body.marker)))
+    .post('/edit', (req, res) => res.send(map.editMarker(req.body.marker)))
+    .post('/del', (req, res) => res.send(map.delMarker(req.body.marker)))
     ;
 
  module.exports = app;

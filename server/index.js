@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
 
 const map = require('./map/controller');
 
@@ -9,7 +10,8 @@ const servername = "localhost";
 const port = 8080;
 
 app
-    //body parsers & console logs here
+    .use(bodyParser.json())
+    .use(bodyParser.urlencoded({ extended: false }))
     .use('/', (req, res, next) => {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "*");
@@ -17,7 +19,8 @@ app
     })
     .use('/', express.static(path.join(__dirname, "../dist/")))
     
-    app.use(express.static('public'))
+    app.use(express.static('public'))//to host picture
+
     //seperate controllers here
     .use('/map', map)
 

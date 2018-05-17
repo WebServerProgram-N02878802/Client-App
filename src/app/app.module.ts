@@ -14,19 +14,20 @@ import { MatInputModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { MapComponent, MarkerEditDialog } from './components/map/map.component';
-import { MessagesComponent } from './components/messages/messages.component';
 import { MapService } from './services/map/map.service';
-import { MessageService } from './services/messages/message.service';
+
+
+import { UserMapComponent, MarkerViewDialog } from './components/user-map/user-map.component';
 
 import 'hammerjs';
-
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
     MarkerEditDialog,
-    MessagesComponent,
+    UserMapComponent,
+    MarkerViewDialog
   ],
   imports: [
     BrowserModule,
@@ -40,12 +41,13 @@ import 'hammerjs';
     MatDialogModule,
     HttpModule,
     RouterModule.forRoot([
-        { path: 'map', component: MapComponent },
-        { path: '', redirectTo: '/map', pathMatch: 'full' }
+        { path: 'client/map', component: MapComponent },
+        { path: 'user/map', component: UserMapComponent },
+        { path: '', redirectTo: '/user/map', pathMatch: 'full' }
     ])
   ],
-  providers: [MessageService, MapService],
-  entryComponents: [ MarkerEditDialog ],
+  providers: [MapService],
+  entryComponents: [ MarkerEditDialog, MarkerViewDialog ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

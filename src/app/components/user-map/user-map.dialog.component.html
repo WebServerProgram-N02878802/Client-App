@@ -1,16 +1,11 @@
 <div class="dialog-container">
   <h2 mat-dialog-title>Location: {{data.title}}</h2>
+
   <div mat-dialog-content>
+  <h2 mat-dialog-title>Description: {{data.description}}</h2>
+  </div>
 
-    <h1 mat-dialog-title>Edit Marker Details:</h1>
-    <mat-form-field>
-      <input matInput placeholder="Title" [(ngModel)]="data.title">
-    </mat-form-field>
-    <mat-form-field>
-      <textarea matInput placeholder="Description" [(ngModel)]="data.description"></textarea>
-    </mat-form-field>
-
-    
+    <!--
     <mat-form-field>
       <button type="button" mat-button (click)="imgFileInput.click()">Add a photo</button>
       <input hidden type="file" #imgFileInput/>
@@ -21,12 +16,9 @@
       <button type="button" mat-button (click)="mp3FileInput.click()">Add an MP3 file</button>
       <input hidden type="file" #mp3FileInput/>
     </mat-form-field>
-    
+    -->
 
-
-  </div>
   <div mat-dialog-actions>
-    <!--<button mat-button (click)="onNoClick()">Cancel</button>-->
     <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
   </div>
 </div>
