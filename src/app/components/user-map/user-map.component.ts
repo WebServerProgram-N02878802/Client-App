@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject, NgZone } from '@angular/core';
 import { Http } from '@angular/http';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Observable } from 'rxjs/Rx'; //alternatives?
 import 'rxjs/add/operator/map';
 
@@ -22,21 +23,32 @@ export class UserMapComponent implements OnInit {
   Map: google.maps.Map;
   Overlay: google.maps.GroundOverlay;
   Model = new Map();
-  //ClientLogged = false; //allow only 1 user logged at a time
-  //draggedMarkerIndex: number;
-  recentEdit = new Marker();
 
   constructor(private _Map: MapService,
     public _dialog: MatDialog,
     @Inject(NgZone) public _zone: NgZone, ) { }
 
   ngOnInit() {
-    this._Map.refresh().subscribe(res => { this.Model = res; this.refreshCallback(); });
+    this._Map.refresh().subscribe(
+      (data) => {
+        if (data.success) {
+          console.log("Request success");
+          this.Model = data.map;
+          this.refreshCallback();
+        }
+        else
+          console.log("Request error");
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
 
 
   refreshCallback() {
+    console.log("Configuring map...");
     this.Map = new google.maps.Map(document.getElementById('map'), {
       center: this.Model.Position,
       zoom: this.Model.Zoom,
@@ -77,25 +89,30 @@ export class UserMapComponent implements OnInit {
         });
       });
     }
+    console.log("Map configured");
   }
 
   markerView(location: google.maps.LatLng) {
-    //replace with fixed 'findModelMarker' method
-    //replace with local editmarker var -> bug fixed
-    this.recentEdit = this.Model.Markers.find(x => (x.Position.lat == location.lat() && x.Position.lng == location.lng()));
-    console.log("editing: " + this.recentEdit.Position.lat + ", " + this.recentEdit.Position.lng);
-
-    var update = false;
+    let editIndex = this.getMarkerIndex(location);
+    let editMarker = this.Model.Markers[editIndex];
+    console.log('The dialog was opened');
 
     let dialogRef = this._dialog.open(MarkerViewDialog, {
       //width: '250px',
-      data: { title: this.recentEdit.Title, description: this.recentEdit.Description }
+      data: { title: editMarker.Title, subtitle: editMarker.Subtitle, description: editMarker.Description, iconsrc: editMarker.Icon, imgsrc: editMarker.Image, mp3src: editMarker.Audio }
     });
-    dialogRef.afterClosed().subscribe( result => {
+    dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
+    
+      if (dialogRef.componentInstance.audioplaying == true){
+        dialogRef.componentInstance.audio.pause();
+      }
     });
   }
 
+
+  getMarkerIndex = (location: google.maps.LatLng) =>
+    this.Model.MapMarkers.findIndex(x => x.position.lat() == location.lat() && x.position.lng() == location.lng());
 }
 
 
@@ -105,18 +122,44 @@ export class UserMapComponent implements OnInit {
   styleUrls: ['./user-map.component.css']
 })
 export class MarkerViewDialog {
+  audio;
+  audioplaying;
+  audiotext = "Listen";
 
   constructor(
     public dialogRef: MatDialogRef<MarkerViewDialog>,
+    private _sanitizer: DomSanitizer,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
-  onCancel(data) {
-    data.submit = false;
-    this.dialogRef.close(data);
+  onClose() {
+    if (this.audioplaying == true){
+      this.audio.pause();
+      this.audio.currentTime = 0;
+    }
+    this.dialogRef.close();
   }
 
-  onSubmit(data) {
-    data.submit = true;
-    this.dialogRef.close(data);
+  playMp3File(data) {
+    if (this.audio == null) {
+      this.audio = new Audio();
+      this.audio.src = "http://localhost:8080/" + data.mp3src;
+      this.audio.load();
+      this.audioplaying=false;
+    }
+    if (this.audioplaying) {
+      this.audioplaying = !this.audioplaying;
+      this.audiotext = "Listen";
+      this.audio.pause();
+    }
+    else {
+      this.audioplaying = !this.audioplaying;
+      this.audiotext = "Pause";
+      this.audio.play();
+    }
+  }
+
+  getIconStyle(data) {
+    const iconstyle = "background-image: url('http://localhost:8080/" + data.iconsrc + "'); background-size: cover;";
+    return this._sanitizer.bypassSecurityTrustStyle(iconstyle);
   }
 }

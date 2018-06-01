@@ -7,26 +7,28 @@
       <input matInput placeholder="Title" [(ngModel)]="data.title">
     </mat-form-field>
     <mat-form-field>
+      <input matInput placeholder="Subtitle" [(ngModel)]="data.subtitle">
+    </mat-form-field>
+    <mat-form-field>
       <textarea matInput placeholder="Description" [(ngModel)]="data.description"></textarea>
     </mat-form-field>
 
-    
-    <mat-form-field>
-      <button type="button" mat-button (click)="imgFileInput.click()">Add a photo</button>
-      <input hidden type="file" #imgFileInput/>
-    </mat-form-field>
-  
-   
-    <mat-form-field>
-      <button type="button" mat-button (click)="mp3FileInput.click()">Add an MP3 file</button>
-      <input hidden type="file" #mp3FileInput/>
-    </mat-form-field>
-    
 
+    <button type="button" mat-button (click)="imgFileInput.click()">Add photo</button>
+    <input hidden type="file" accept="image/jpg, image/jpeg, image/png" (change)="appendImgToForm($event.target.files)" #imgFileInput/>
+
+    <button type="button" mat-button (click)="iconFileInput.click()">Add icon</button>
+    <input hidden type="file" accept="image/jpg, image/jpeg, image/png" (change)="appendIconToForm($event.target.files)" #iconFileInput/>
+
+    <button type="button" mat-button (click)="mp3FileInput.click()">Add an MP3 file</button>
+    <input hidden type="file" accept="audio/mpeg" (change)="appendMp3ToForm($event.target.files)" #mp3FileInput/>
+
+    <!--[mat-dialog-close]="data"-->
 
   </div>
   <div mat-dialog-actions>
-    <!--<button mat-button (click)="onNoClick()">Cancel</button>-->
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+    <button mat-button (click)="onDelete()">Delete</button>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onSubmit(data)" cdkFocusInitial>Ok</button>
   </div>
 </div>

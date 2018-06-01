@@ -9,6 +9,10 @@ export class Map {
 
 export class Marker {
     Position: {lat: number, lng: number};
-    Title: string;
-    Description: string;
+    Title: string = "";
+    Subtitle: string = "";
+    Description: string = "";
+    Image: string = "";
+    Icon: string = "";
+    Audio: string = "";
 }

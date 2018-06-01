@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from "@angular/http";
+import { Http, RequestOptions, Headers } from "@angular/http";
 import { Observable } from 'rxjs/Rx'; //alternatives?
 import 'rxjs/add/operator/map';
 
@@ -9,34 +9,78 @@ import { Map, Marker } from '../../models/map';
 @Injectable()
 export class MapService {
 
-  private _api = "/map"; 
+  private _api = "/map";
 
   constructor(private http: Http) { }
-  
-  refresh(): Observable<Map> {
-    console.log("retrieving state");
+
+  refresh(): Observable<any> {
+    console.log("Sent refresh request...");
     return this.http.get(this._api + "/state").map(res => res.json());
   }
 
   addMarker(tmarker: Marker): Observable<any> {
-    console.log("adding marker");
-    return this.http.post(this._api + "/add", { marker: tmarker });
+    console.log("Sent add marker request...");
+    return this.http.post(this._api + "/add", { marker: tmarker }).map(res => res.json());
   }
 
-  editMarker(tmarker: Marker): Observable<any> {
-    console.log("editing marker: " + tmarker.Position.lat + ", " + tmarker.Position.lng);
-    return this.http.post(this._api + "/edit", { marker: tmarker });
+  deleteMarker(tindex: number): Observable<any> {
+    console.log("Sent delete marker request...");
+    return this.http.post(this._api + "/delete", { index: tindex }).map(res => res.json());
   }
 
-  delMarker(tmarker: Marker): Observable<any> {
-    console.log("deleting marker");
-    return this.http.post(this._api + "/del", { marker: tmarker });
+  editMarker(tindex: number, tmarker: Marker): Observable<any> {
+    console.log("Sent edit marker request...");
+    return this.http.post(this._api + "/edit", { marker: tmarker, index: tindex }).map(res => res.json());
   }
 
+  editMarkerAddImg(tindex: number, file: File): Observable<any> {
+    console.log("Sent edit marker (add img) request...");
+    let formData = new FormData();
+    formData.append('image', file, file.name);
+    formData.append('index', String(tindex));
 
+    /*
+    let headers = new Headers();
+    // In Angular 5, including the header Content-Type can invalidate your request
+    headers.append('Content-Type', 'multipart/form-data');
+    headers.append('Accept', 'application/json');
+    let options = new RequestOptions({ headers: headers });
+    */
 
-    
-  
+    return this.http.post(this._api + "/edit/image/add", formData).map(res => res.json());
+  }
 
+  editMarkerAddIcon(tindex: number, file: File): Observable<any> {
+    console.log("Sent edit marker (add icon) request...");
+    let formData = new FormData();
+    formData.append('icon', file, file.name);
+    formData.append('index', String(tindex));
 
+    /*
+    let headers = new Headers();
+    // In Angular 5, including the header Content-Type can invalidate your request
+    headers.append('Content-Type', 'multipart/form-data');
+    headers.append('Accept', 'application/json');
+    let options = new RequestOptions({ headers: headers });
+    */
+
+    return this.http.post(this._api + "/edit/icon/add", formData).map(res => res.json());
+  }
+
+  editMarkerAddMp3(tindex: number, file: File): Observable<any> {
+    console.log("Sent edit marker (add mp3) request...");
+    let formData = new FormData();
+    formData.append('mp3', file, file.name);
+    formData.append('index', String(tindex));
+
+    /*
+    let headers = new Headers();
+    // In Angular 5, including the header Content-Type can invalidate your request
+    headers.append('Content-Type', 'multipart/form-data');
+    headers.append('Accept', 'application/json');
+    let options = new RequestOptions({ headers: headers });
+    */
+
+    return this.http.post(this._api + "/edit/mp3/add", formData).map(res => res.json());
+  }
 }

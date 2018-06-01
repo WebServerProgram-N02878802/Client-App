@@ -1,24 +1,17 @@
-<div class="dialog-container">
-  <h2 mat-dialog-title>Location: {{data.title}}</h2>
-
-  <div mat-dialog-content>
-  <h2 mat-dialog-title>Description: {{data.description}}</h2>
-  </div>
-
-    <!--
-    <mat-form-field>
-      <button type="button" mat-button (click)="imgFileInput.click()">Add a photo</button>
-      <input hidden type="file" #imgFileInput/>
-    </mat-form-field>
-  
-   
-    <mat-form-field>
-      <button type="button" mat-button (click)="mp3FileInput.click()">Add an MP3 file</button>
-      <input hidden type="file" #mp3FileInput/>
-    </mat-form-field>
-    -->
-
-  <div mat-dialog-actions>
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
-  </div>
-</div>
+<mat-card class="marker-card dialog-container">
+  <mat-card-header>
+    <div mat-card-avatar *ngIf="data.iconsrc != ''" [style]="getIconStyle(data)"></div> <!--must sanitize styles w/ interpolated/property-bound data-->
+    <mat-card-title>{{data.title}}</mat-card-title>
+    <mat-card-subtitle>{{data.subtitle}}</mat-card-subtitle>
+  </mat-card-header>
+  <img mat-card-image *ngIf="data.imgsrc != ''" [src]='"http://localhost:8080/" + data.imgsrc '>
+  <mat-card-content>
+    <p class="content-break-word">
+      {{data.description}}
+    </p>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-button type="button" *ngIf="data.mp3src != ''" (click)="playMp3File(data)">{{this.audiotext}}</button>
+    <button mat-button (click)="onClose()">Close</button>
+  </mat-card-actions>
+</mat-card>
