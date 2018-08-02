@@ -1,0 +1,17 @@
+<div class="dialog-container">
+    <h1 mat-dialog-title class="info-title"> <b> Map Instructions: </b> </h1>
+
+    <mat-dialog-content>
+        <h3 mat-dialog-title class="info-subtext"> • <b class="info-bold">Double-Click</b> the map to add a <b class="info-bold">Marker</b>. </h3>
+        <h3 mat-dialog-title class="info-subtext"> • <b class="info-bold">Click</b> a Marker to edit Marker details. </h3>
+        <h3 mat-dialog-title class="info-subtext"> • <b class="info-bold">Drag</b> a Marker to move the location. </h3>
+        <h3 mat-dialog-title class="info-subtext"> • <b class="info-bold">Scroll</b> to adjust the map zoom level. </h3>
+        <h3 mat-dialog-title class="info-subtext"> • <b class="info-bold">Drag</b> the map to adjust the view position. </h3>
+        <h3 mat-dialog-title class="info-subtext"> • <b class="info-bold">Click</b>  <img id="info-img" src="http://{{data.server}}/baseline_gps_small.png">  to set the default map <b class="info-bold">zoom and position</b>. </h3>
+        <h3 mat-dialog-title class="info-subtext"> • <b class="info-bold">Click</b>  <img id="info-img" src="http://{{data.server}}/map_small.png">  to see recent changes in the <b class="info-bold">user view</b>. </h3>
+    </mat-dialog-content>
+
+    <div mat-dialog-actions>
+        <button mat-button (click)="onCancel()" cdkFocusInitial>Close</button>
+    </div>
+</div>

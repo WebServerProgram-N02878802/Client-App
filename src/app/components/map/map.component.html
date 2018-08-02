@@ -1,2 +1,10 @@
-<div id="map">
+<div id="map-container">
+    <div class="map-ui">
+        <button mat-raised-button id="map-ui-guide" class="map-ui-component" (click)="infoButtonToggle()">Guide</button>
+        <button mat-raised-button id="map-ui-button" class="map-ui-component" (click)="setButtonToggle()"><img src="http://{{this.Server}}/baseline_gps.png"></button>
+        <button mat-raised-button id="map-ui-button" class="map-ui-component"><a href="http://{{this.Server}}/user/map" target="_blank"><img src="http://{{this.Server}}/map_big.png"></a></button>
+        <span id="map-ui-mapbox" class="map-ui-component">Map overlay by <a href='https://www.mapbox.com/about/maps/'>Mapbox</a></span>
+    </div>
+
+    <div id="map"></div>
 </div>

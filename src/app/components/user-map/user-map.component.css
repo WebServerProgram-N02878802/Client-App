@@ -1,25 +1,93 @@
 /* Always set the map height explicitly to define the size of the div
  * element that contains the map. */
+ #map-container {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
  #map {
     height: 100%;
     width: 100%;
     position: absolute;
 }
 
+#map-ui-mapbox{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-bottom: 15px;
+    margin-right: 1px;
+    padding-right: 2px;
+    padding-left: 1px;
+    font-size: 70%;
+    height: 13px;
+    background-color: rgba(218, 214, 210, 0.95);
+    color: rgb(68, 68, 72);
+}
+
+.map-ui {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.map-ui-component {
+    z-index:25;
+    position: relative;
+}
+
+@media screen and (max-height: 500px) {
+    .dialog-container {
+        display: flex;
+        flex-direction: column;
+        max-width: 500px;
+        max-height: 200px !important;
+        overflow: auto !important;
+    }
+}
+@media screen and (min-height: 501px) and (max-height: 750px) {
+    .dialog-container {
+        display: flex;
+        flex-direction: column;
+        max-width: 500px;
+        max-height: 400px !important;
+        overflow: auto !important;
+    }
+}
+
+#rewind-button {
+    margin: 0px;
+    padding: 0px;
+    min-width: 38px;
+}
+
+#close-button {
+    float:right;
+}
+
 .dialog-container {
     display: flex;
     flex-direction: column;
-  }
- 
-.marker-card {
-    max-width: 400px;
-}
-
-.marker-card-header-image {
-    background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-    background-size: cover;
+    max-width: 500px;
+    max-height: 700px;
+    overflow: auto !important;
 }
 
 .content-break-word {
     word-wrap: break-word;
 }
+
+.mat-card-header {
+    min-height: 58px !important;
+}
+
+.mat-dialog-container {
+    padding: 0px !important;
+}
+
+/*
+.mat-card-actions {
+	padding-top: 50px !important;
+}
+*/

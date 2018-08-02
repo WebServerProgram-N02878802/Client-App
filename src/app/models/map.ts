@@ -15,4 +15,5 @@ export class Marker {
     Image: string = "";
     Icon: string = "";
     Audio: string = "";
+    MarkerIcon: string = "";
 }

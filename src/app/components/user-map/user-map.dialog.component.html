@@ -1,10 +1,11 @@
-<mat-card class="marker-card dialog-container">
+<mat-card class="dialog-container">
   <mat-card-header>
-    <div mat-card-avatar *ngIf="data.iconsrc != ''" [style]="getIconStyle(data)"></div> <!--must sanitize styles w/ interpolated/property-bound data-->
+    <div mat-card-avatar *ngIf="data.iconsrc != ''" [style]="getIconStyle(data)"></div>
+    <!--must sanitize styles w/ interpolated/property-bound data-->
     <mat-card-title>{{data.title}}</mat-card-title>
     <mat-card-subtitle>{{data.subtitle}}</mat-card-subtitle>
   </mat-card-header>
-  <img mat-card-image *ngIf="data.imgsrc != ''" [src]='"http://localhost:8080/" + data.imgsrc '>
+  <img mat-card-image id="card-image" *ngIf="data.imgsrc != ''" src="http://{{data.server}}/{{data.imgsrc}}">
   <mat-card-content>
     <p class="content-break-word">
       {{data.description}}
@@ -12,6 +13,9 @@
   </mat-card-content>
   <mat-card-actions>
     <button mat-button type="button" *ngIf="data.mp3src != ''" (click)="playMp3File(data)">{{this.audiotext}}</button>
-    <button mat-button (click)="onClose()">Close</button>
+    <button mat-button id="rewind-button" type="button" *ngIf="data.mp3src != ''" (click)="rewindMp3File(data)">
+      <img src="http://{{data.server}}/rewind.png">
+    </button>
+    <button mat-button id="close-button" (click)="onClose()">Close</button>
   </mat-card-actions>
 </mat-card>

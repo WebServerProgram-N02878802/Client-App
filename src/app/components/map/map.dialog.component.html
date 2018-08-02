@@ -1,5 +1,5 @@
 <div class="dialog-container">
-  <h2 mat-dialog-title>Location: {{data.title}}</h2>
+  <h1 mat-dialog-title>Location: {{data.title}}</h1>
   <div mat-dialog-content>
 
     <h1 mat-dialog-title>Edit Marker Details:</h1>
@@ -22,6 +22,9 @@
 
     <button type="button" mat-button (click)="mp3FileInput.click()">Add an MP3 file</button>
     <input hidden type="file" accept="audio/mpeg" (change)="appendMp3ToForm($event.target.files)" #mp3FileInput/>
+
+    <button type="button" mat-button (click)="markerIconFileInput.click()">Edit Marker icon</button>
+    <input hidden type="file" accept="image/jpg, image/jpeg, image/png" (change)="appendMarkerIconToForm($event.target.files)" #markerIconFileInput/>
 
     <!--[mat-dialog-close]="data"-->
 

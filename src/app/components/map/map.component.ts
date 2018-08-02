@@ -1,12 +1,12 @@
 import { Component, OnInit, Inject, NgZone } from '@angular/core';
-import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Rx';   //update rxjs
 import 'rxjs/add/operator/map';
 
 import { Map, Marker } from '../../models/map';
 import { MapService } from '../../services/map/map.service';
+import { LoginService } from '../../services/login/login.service';
 
-import { } from '@types/google-maps';   //dev-dep for google library | could use google: any  | TEST if needed
+import { } from '@types/google-maps';
 
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
@@ -20,14 +20,22 @@ export class MapComponent implements OnInit {
   Map: google.maps.Map;
   Overlay: google.maps.GroundOverlay;
   Model = new Map();
-  //ClientLogged = false;         //allow only 1 user logged at a time
-  //draggedMarkerIndex: number;   //FOR DRAGGING
+  Server = "cs.newpaltz.edu:10010";      //TEST CONFIGURATION | change after deployed eg. "localhost:8080"
+  clientLogged;
+  draggedMarkerIndex: number;
+
 
 
   constructor(private _Map: MapService,
+    private _Login: LoginService,
     public _dialog: MatDialog,
     @Inject(NgZone) public _zone: NgZone, ) {
+    this.clientLogged = this._Login.clientLogged;
+    if (!this.clientLogged) {
+      this._Login.redirectLogin();
+    }
   }
+
   ngOnInit() {
     this._Map.refresh().subscribe(
       (data) => {
@@ -46,8 +54,12 @@ export class MapComponent implements OnInit {
   }
 
 
+
+
   refreshCallback() {
     console.log("Configuring map...");
+
+    //GENERATE MAP
     this.Map = new google.maps.Map(document.getElementById('map'), {
       center: this.Model.Position,
       zoom: this.Model.Zoom,
@@ -63,7 +75,7 @@ export class MapComponent implements OnInit {
       west: -74.090992
     };
     this.Overlay = new google.maps.GroundOverlay(
-      'http://localhost:8080/npmap.png',            //CHANGE WHEN DEPLOYED
+      "http://" + this.Server + "/npmap.png",
       imageBounds
     );
     this.Overlay.setMap(this.Map);
@@ -71,20 +83,23 @@ export class MapComponent implements OnInit {
     //CONFIG MAP w/ MARKERS | CONFIG CLIENT MODEL
     for (var i = 0; i < this.Model.Markers.length; i++) {
       var location = new google.maps.LatLng(this.Model.Markers[i].Position.lat, this.Model.Markers[i].Position.lng);
-      var tempMapMarker = new google.maps.Marker({
+      var tempMapMarker
+      tempMapMarker = new google.maps.Marker({
         position: location,
-        //draggable: true,    //FOR DRAGGING
+        draggable: true,
         map: this.Map
       });
+      if (this.Model.Markers[i].MarkerIcon != "") {
+        tempMapMarker.setIcon("http://" + this.Server + "/" + this.Model.Markers[i].MarkerIcon);
+      }
       this.Model.MapMarkers.push(tempMapMarker);
 
-      //ATTACH LISTENERS (marker)
+      //ATTACH EVENT LISTENERS TO MARKERS
       tempMapMarker.addListener('click', (e) => {
         this._zone.run(() => {
           this.markerEdit(e.latLng);
         });
       });
-      /*  FOR DRAGGING
       tempMapMarker.addListener('dragstart', (e) => {
         this._zone.run(() => {
           this.markerDragstart(e.latLng);
@@ -95,10 +110,9 @@ export class MapComponent implements OnInit {
           this.markerDragend(e.latLng);
         });
       });
-      */
     }
 
-    //ATTACH LISTENERS (map)
+    //ATTACH EVENT LISTENERS TO MAP
     this.Overlay.addListener('dblclick', (e) => {
       this._zone.run(() => {
         this.markerCreate(e.latLng);
@@ -113,6 +127,11 @@ export class MapComponent implements OnInit {
   }
 
 
+
+
+
+
+
   markerCreate(location: google.maps.LatLng) {
     var tempModelMarker = new Marker();
     tempModelMarker.Position = { lat: location.lat(), lng: location.lng() };
@@ -121,23 +140,22 @@ export class MapComponent implements OnInit {
       (data) => {
         if (data.success) {
           console.log("Request success");
-          console.log("Adding marker...");
+
           //ADD MARKER TO CLIENT MODEL
           this.Model.Markers.push(tempModelMarker);
           var tempMapMarker = new google.maps.Marker({
             position: location,
-            //draggable: true,    //FOR DRAGGING
+            draggable: true,
             map: this.Map
           });
           this.Model.MapMarkers.push(tempMapMarker);
 
-          //ATTACH LISTENERS (marker)
+          //ATTACH EVENT LISTENERS TO MARKER
           tempMapMarker.addListener('click', (e) => {
             this._zone.run(() => {
               this.markerEdit(e.latLng);
             });
           });
-          /*  FOR DRAGGING
           tempMapMarker.addListener('dragstart', (e) => {
             this._zone.run(() => {
               this.markerDragstart(e.latLng);
@@ -148,8 +166,6 @@ export class MapComponent implements OnInit {
               this.markerDragend(e.latLng);
             });
           });
-          */
-          console.log("Marker added")
         }
         else
           console.log("Request error");
@@ -160,6 +176,10 @@ export class MapComponent implements OnInit {
     );
   }
 
+
+
+
+
   markerEdit(location: google.maps.LatLng) {
     let editIndex = this.getMarkerIndex(location);
     let editMarker = this.Model.Markers[editIndex];
@@ -168,33 +188,33 @@ export class MapComponent implements OnInit {
     let updateimg = false;
     let updatemp3 = false;
     let updateicon = false;
+    let updatemarkericon = false;
     let imgfile: File;
     let mp3file: File;
     let iconfile: File;
+    let markericonfile: File;
+    let markerIconSet = false;
+    if (this.Model.Markers[editIndex].MarkerIcon != "") {
+      markerIconSet = true;
+    }
+
 
     let dialogRef = this._dialog.open(MarkerEditDialog, {
-      //width: '250px',
       data: { title: editMarker.Title, subtitle: editMarker.Subtitle, description: editMarker.Description }
     });
-
     dialogRef.afterClosed().subscribe(
       (result) => {
         if (result != null) {
-          console.log('Dialog submitted');
-
           if (result.delete) {
             this._Map.deleteMarker(editIndex).subscribe(
               (data) => {
                 if (data.success) {
                   console.log("Request success");
-                  console.log("Deleting marker...");
                   this.Model.MapMarkers.splice(editIndex, 1)[0].setMap(null);
                   this.Model.Markers.splice(editIndex, 1);
-                  console.log("Marker deleted");
                 }
                 else {
                   console.log("Request error");
-                  console.log("Marker not deleted");
                 }
               },
               (err) => {
@@ -203,50 +223,43 @@ export class MapComponent implements OnInit {
             );
             return;
           }
-
           if (result.title != "" && result.title != editMarker.Title) {
-            console.log("*title changed*");
             update = true;
             editMarker.Title = result.title;
           }
           if (result.subtitle != "" && result.subtitle != editMarker.Subtitle) {
-            console.log("*subtitle changed*");
             update = true;
             editMarker.Subtitle = result.subtitle;
           }
           if (result.description != "" && result.description != editMarker.Description) {
-            console.log("*description changed*");
             update = true;
             editMarker.Description = result.description;
           }
           if (result.imgfile != null) {
-            console.log("*imgfile changed*");
             updateimg = true;
             imgfile = result.imgfile;
           }
           if (result.iconfile != null) {
-            console.log("*iconfile changed*");
             updateicon = true;
             iconfile = result.iconfile;
           }
           if (result.mp3file != null) {
-            console.log("*mp3file changed*");
             updatemp3 = true;
             mp3file = result.mp3file;
+          }
+          if (result.markericonfile != null) {
+            updatemarkericon = true;
+            markericonfile = result.markericonfile;
           }
           if (update) {
             this._Map.editMarker(editIndex, editMarker).subscribe(
               (data) => {
                 if (data.success) {
                   console.log("Request success");
-                  console.log("Editing marker...");
                   this.Model.Markers[editIndex] = editMarker;
-                  console.log("Marker edited");
                 }
                 else {
                   console.log("Request error");
-                  console.log("Marker not edited");
-
                 }
               },
               (err) => {
@@ -259,14 +272,10 @@ export class MapComponent implements OnInit {
               (data) => {
                 if (data.success) {
                   console.log("Request success");
-                  console.log("Adding audio to marker...");
-                  //ADD MP3 TO CLIENT MODEL
                   this.Model.Markers[editIndex].Audio = data.name;
-                  console.log("Marker audio added");
                 }
                 else {
                   console.log("Request error");
-                  console.log("Audio not uploaded");
 
                 }
               },
@@ -280,15 +289,10 @@ export class MapComponent implements OnInit {
               (data) => {
                 if (data.success) {
                   console.log("Request success");
-                  console.log("Adding icon to marker...");
-                  //ADD MP3 TO CLIENT MODEL
                   this.Model.Markers[editIndex].Icon = data.name;
-                  console.log("Marker icon added");
                 }
                 else {
                   console.log("Request error");
-                  console.log("Audio not uploaded");
-
                 }
               },
               (err) => {
@@ -301,15 +305,27 @@ export class MapComponent implements OnInit {
               (data) => {
                 if (data.success) {
                   console.log("Request success");
-                  console.log("Adding image to marker...");
-                  //ADD IMG TO CLIENT MODEL
                   this.Model.Markers[editIndex].Image = data.name;
-                  console.log("Marker image added");
                 }
                 else {
                   console.log("Request error");
-                  console.log("Image not uploaded");
-
+                }
+              },
+              (err) => {
+                console.log(err);
+              }
+            );
+          }
+          if (updatemarkericon) {
+            this._Map.editMarkerAddMarkerIcon(editIndex, markericonfile).subscribe(
+              (data) => {
+                if (data.success) {
+                  console.log("Request success");
+                  this.Model.Markers[editIndex].MarkerIcon = data.name;
+                  this.Model.MapMarkers[editIndex].setIcon("http://" + this.Server + "/" + this.Model.Markers[editIndex].MarkerIcon);
+                }
+                else {
+                  console.log("Request error");
                 }
               },
               (err) => {
@@ -318,17 +334,58 @@ export class MapComponent implements OnInit {
             );
           }
         }
-        else if (!updateimg || !updatemp3 || !update)
+        else if (!updateimg || !updateicon || !updatemarkericon || !updatemp3 || !update)
           console.log('Dialog canceled');
+      }
+    );
+
+  }
+
+
+
+
+
+
+
+  infoButtonToggle() {
+    let dialogRef = this._dialog.open(infoButtonDialog, {
+      data: { server: this.Server }
+    });
+  }
+
+  setButtonToggle() {
+    let dialogRef = this._dialog.open(setButtonDialog, {
+      data: { server: this.Server }
+    });
+    dialogRef.afterClosed().subscribe(
+      (result) => {
+        if (result.success) {
+          let position = { lat: this.Map.getCenter().lat(), lng: this.Map.getCenter().lng() };
+          let zoom = this.Map.getZoom();
+          this._Map.editCenter(position, zoom).subscribe(
+            (result) => {
+              if (result.success) {
+                console.log("Request success");
+                this.Model.Position.lat = position.lat;
+                this.Model.Position.lng = position.lng;
+                this.Model.Zoom = zoom;
+              }
+              else {
+                console.log("Request error");
+              }
+            }
+          );
+        }
       }
     );
   }
 
 
+
+
+
   getMarkerIndex = (location: google.maps.LatLng) =>
     this.Model.MapMarkers.findIndex(x => x.position.lat() == location.lat() && x.position.lng() == location.lng());
-
-  /*  FOR DRAGGING
   markerDragstart(location: google.maps.LatLng) {
     this.draggedMarkerIndex = this.getMarkerIndex(location);
     console.log(this.draggedMarkerIndex);
@@ -338,11 +395,20 @@ export class MapComponent implements OnInit {
   }
   updateMarkerLocation = (endLocation: google.maps.LatLng, index: number) => {
     this.Model.Markers[index].Position.lat = endLocation.lat();
-    this.Model.Markers[index].Position.lat = endLocation.lat();
-    this.Model.MapMarkers[index].Position(endLocation);
+    this.Model.Markers[index].Position.lng = endLocation.lng();
+    this._Map.dragMarker(index, { lat: this.Model.Markers[index].Position.lat, lng: this.Model.Markers[index].Position.lng }).subscribe(
+      (result) => {
+        if (result.success) {
+          console.log("Request success");
+        }
+        else {
+          console.log("Request error");
+        }
+      }
+    );
   }
-  */
 }
+
 
 
 
@@ -357,6 +423,7 @@ export class MarkerEditDialog {
   imgFileToUpload: File = null;
   iconFileToUpload: File = null;
   mp3FileToUpload: File = null;
+  markerIconFileToUpload: File = null;
 
   constructor(
     public dialogRef: MatDialogRef<MarkerEditDialog>,
@@ -375,68 +442,88 @@ export class MarkerEditDialog {
   onSubmit(data) {
     data.delete = false;
     if (this.imgFileToUpload != null) {
-      console.log("Submitting w/ image...");
       data.imgfile = this.imgFileToUpload;
     }
-    else
-      console.log("Submitting w/o image...");
-
     if (this.iconFileToUpload != null) {
-      console.log("Submitting w/ icon...");
       data.iconfile = this.iconFileToUpload;
     }
-    else
-      console.log("Submitting w/o image...");
-
     if (this.mp3FileToUpload != null) {
-      console.log("Submitting w/ mp3...");
       data.mp3file = this.mp3FileToUpload;
     }
-    else
-      console.log("Submitting w/o mp3...");
-
+    if (this.markerIconFileToUpload != null) {
+      data.markericonfile = this.markerIconFileToUpload;
+    }
     this.dialogRef.close(data);
   }
 
-
   appendImgToForm(files: FileList) {
-    console.log("Appending image to form data...");
     this.imgFileToUpload = files.item(0);
-    console.log(this.imgFileToUpload);
-    console.log("Image appened to form data");
   }
 
   appendIconToForm(files: FileList) {
-    console.log("Appending icon to form data...");
     this.iconFileToUpload = files.item(0);
-    console.log(this.iconFileToUpload);
-    console.log("Icon appened to form data");
   }
 
   appendMp3ToForm(files: FileList) {
-    console.log("Appending audio to form data...");
     this.mp3FileToUpload = files.item(0);
-    console.log(this.mp3FileToUpload);
-    console.log("Audio appened to form data");
+  }
+
+  appendMarkerIconToForm(files: FileList) {
+    this.markerIconFileToUpload = files.item(0);
   }
 }
 
 
-    /*
-      FEATURES:
-      CREATE MARKER
-      EDIT MARKER
-      DELETE MARKER
-      //DRAG MARKER
 
-      MARKER ICON (remove/add)
-      MARKER IMGs  ...
-      MARKER AUDIO
-      MARKER TEXT
 
-      DISCLAIMER
-      SETTINGS
-      LOGIN
 
-      DOCUMENTATION/GUIDE
-    */
+
+@Component({
+  selector: 'app-map',
+  templateUrl: './map.info.component.html',
+  styleUrls: ['./map.component.css']
+})
+export class infoButtonDialog {
+
+  constructor(
+    public dialogRef: MatDialogRef<infoButtonDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: any) { }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+  onCancel() {
+    this.dialogRef.close();
+  }
+}
+
+
+
+
+
+
+@Component({
+  selector: 'app-map',
+  templateUrl: './map.set.component.html',
+  styleUrls: ['./map.component.css']
+})
+export class setButtonDialog {
+
+  constructor(
+    public dialogRef: MatDialogRef<setButtonDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: any) { }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+  onOkClick() {
+    let data = { success: true };
+    this.dialogRef.close(data);
+  }
+
+  onCancel() {
+    this.dialogRef.close();
+  }
+}

@@ -3,42 +3,64 @@ function Map() {
     this.Markers = [];
     this.MapMarkers = [];
     this.Title = "NP MAP";
-    this.Position = {lat: 41.748, lng: -74.083};
-    this.Zoom = 16;
+    this.Position = {lat: 41.7381177795104, lng: -74.08553111760597};
+    this.Zoom = 17;
     
+    
+    this.initMarker = (lat, lng, title, subtitle, description, image, icon, audio, markericon) => {
+        var tempmarker = new Marker();
+        tempmarker.Position.lat = lat;
+        tempmarker.Position.lng = lng;
+        tempmarker.Title = title;
+        tempmarker.Subtitle = subtitle;
+        tempmarker.Description = description;
+        tempmarker.Image = image;
+        tempmarker.Icon = icon;
+        tempmarker.Audio = audio;
+        tempmarker.MarkerIcon = markericon;
+        this.Markers.push(tempmarker);
+    }
+    this.editPosition = (position) => {
+        this.Position = {lat: position.lat, lng: position.lng};
+    }
+    this.editZoom = (zoom) => {
+        this.Zoom = zoom;
+    }
     this.addMarker = (marker) => {
-        console.log("add marker");
         this.Markers.push(marker);
     };
     this.editMarker = (index, marker) => {
-        console.log("edit marker");
         this.Markers.splice(index, 1, marker);
     };
+    this.dragMarker = (index, position) => {
+        this.Markers[index].Position.lat = position.lat;
+        this.Markers[index].Position.lng = position.lng;
+    }
     this.editMarkerAddImg = (index, dir, name) => {
-        console.log("edit marker (add img)");
         this.Markers[index].Image = name;
     }
     this.editMarkerAddIcon = (index, dir, name) => {
-        console.log("edit marker (add icon)");
         this.Markers[index].Icon = name;
     }
     this.editMarkerAddMp3 = (index, dir, name) => {
-        console.log("edit marker (add mp3)");
         this.Markers[index].Audio = name;
     }
+    this.editMarkerAddMarkerIcon = (index, dir, name) => {
+        this.Markers[index].MarkerIcon = name;
+    }
     this.deleteMarker = (index) => {
-        console.log("del marker");
         this.Markers.splice(index, 1);
     };
 }
 
 function Marker() {
-    this.Position = {lat, lng};
+    this.Position = {lat: 0, lng: 0};
     this.Title = "";
     this.Subtitle = ""
     this.Description = "";
     this.Image = "";
     this.Icon = "";
     this.Audio = "";
+    this.MarkerIcon = "";
 }
-module.exports = Map; //export Marker too?
+module.exports = Map;

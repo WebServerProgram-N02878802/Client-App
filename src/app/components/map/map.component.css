@@ -1,18 +1,86 @@
 /* Always set the map height explicitly to define the size of the div
  * element that contains the map. */
-#map {
+ #map-container {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+ #map {
     height: 100%;
     width: 100%;
     position: absolute;
 }
 
+#map-ui-button{
+    float: right;
+    height: 38px !important;
+    width: 38px !important;
+    padding: 0px;
+    margin: 0px;
+    min-width: 40px;
+    min-height: 40px;
+    margin-top: 2px;
+    margin-right: 2px;
+}
+
+#map-ui-guide{
+    float: left;
+    min-width: 65px;
+    padding: 0px;
+    margin-top: 2px;
+    margin-left: 2px;
+}
+
+#info-img{
+    top: 3px;
+    position:relative;
+}
+
+#map-ui-mapbox{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-bottom: 15px;
+    margin-right: 1px;
+    padding-right: 2px;
+    padding-left: 1px;
+    font-size: 70%;
+    height: 13px;
+    background-color: rgba(218, 214, 210, 0.95);
+    color: rgb(68, 68, 72);
+}
+
+.map-ui {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.map-ui-component {
+    z-index:25;
+    position: relative;
+}
+
 .dialog-container {
     display: flex;
     flex-direction: column;
-  }
+}
   
 .dialog-container > * {
     width: 100%;
+}
+
+.info-title {
+    font-size: 150%;
+}
+
+.info-subtext {
+    font-size: 100%;
+}
+
+.info-bold {
+    font-size:105%;
 }
 
 mat-form-field {

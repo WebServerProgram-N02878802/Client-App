@@ -1,0 +1,14 @@
+<div>
+  <div class="login-container">
+    <mat-form-field>
+      <input matInput #Username placeholder="Username">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput #Password placeholder="Password">
+    </mat-form-field>
+
+    <button mat-button (click)="loginClick(Username.value, Password.value)" cdkFocusInitial>Login</button>
+    <button mat-button (click)="userViewClick()">User View</button>
+  </div>
+</div>

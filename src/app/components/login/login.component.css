@@ -1,0 +1,26 @@
+
+@media screen and (max-width: 200px) {
+    .login-container {
+        margin: auto;
+        width:95%;
+        padding-top: 15px;
+        padding-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+@media screen and (min-width: 201px) {
+    .login-container {
+        margin: auto;
+        width:70%;
+        padding-top: 35px;
+        padding-bottom: 25px;
+        display: flex;
+        flex-direction: column;
+    }
+}
+  
+.login-container > * {
+    width: 100%;
+}
