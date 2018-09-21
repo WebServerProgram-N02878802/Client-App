@@ -22,7 +22,7 @@ export class UserMapComponent implements OnInit {
   Map: google.maps.Map;
   Overlay: google.maps.GroundOverlay;
   Model = new Map();
-  Server = "cs.newpaltz.edu:10010";      //TEST CONFIGURATION | change after deployed eg. "localhost:8080"
+  Server = "cs.newpaltz.edu/p/f18-01";      //TEST CONFIGURATION | change after deployed eg. "localhost:8080"
 
 
 

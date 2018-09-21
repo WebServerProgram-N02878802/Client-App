@@ -7,7 +7,9 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class LoginService {
   
-  private _api = "/login";
+
+  private serverdir = "/p/f18-01";
+  private _api = this.serverdir + "/login";
 
   clientLogged: boolean;
 

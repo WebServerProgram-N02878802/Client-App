@@ -1,27 +1,12 @@
-# ClientApp
+## SUNY New Paltz Map
+This project contains a web application that hosts a configurable map of SUNY New Paltz. In this application, a client may place, edit, and delete markers on the campus map. Data that is configured on the map, may be viewed from the applications user-view.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.4.
+## Deployment
+Download the project files. Install the Angular CLI to your local environment. Execute the Angular CLI command 'ng build --prod' in the root project directory (this will generate some files). Connect to a server production environment. Copy the project files into the desired server directory. 
 
-## Development server
+## Hosting
+On Linux environment, execute the command "nohup node ./server/index &" in the project directory.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Debugging
+Error logs are written to console. If the application is run as a background process on Linux, error logs will be written to the nohup.out file generated in the root project directory.
 
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).

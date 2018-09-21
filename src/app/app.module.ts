@@ -23,6 +23,7 @@ import { LoginComponent } from './components/login/login.component';
 
 import 'hammerjs';
 
+
 @NgModule({
   declarations: [
     AppComponent,

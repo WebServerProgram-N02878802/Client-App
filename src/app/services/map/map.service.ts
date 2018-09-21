@@ -9,7 +9,8 @@ import { Map, Marker } from '../../models/map';
 @Injectable()
 export class MapService {
 
-  private _api = "/map";
+  private serverdir = "/p/f18-01";
+  private _api = this.serverdir + "/map";
 
   constructor(private http: Http) { }
 

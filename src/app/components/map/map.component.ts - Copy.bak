@@ -201,6 +201,7 @@ export class MapComponent implements OnInit {
       markerIconSet = true;
     }
 
+
     let dialogRef = this._dialog.open(MarkerEditDialog, {
       data: { title: editMarker.Title, subtitle: editMarker.Subtitle, description: editMarker.Description }
     });
@@ -382,21 +383,21 @@ export class MapComponent implements OnInit {
     this.Model.MapMarkers.findIndex(x => x.position.lat() == location.lat() && x.position.lng() == location.lng());
   markerDragstart(location: google.maps.LatLng) {
     this.draggedMarkerIndex = this.getMarkerIndex(location);
+    console.log(this.draggedMarkerIndex);
   }
   markerDragend(location: google.maps.LatLng) {
     this.updateMarkerLocation(location, this.draggedMarkerIndex);
   }
   updateMarkerLocation = (endLocation: google.maps.LatLng, index: number) => {
-    this._Map.dragMarker(index, { lat: endLocation.lat(), lng: endLocation.lng() }).subscribe(
+    this.Model.Markers[index].Position.lat = endLocation.lat();
+    this.Model.Markers[index].Position.lng = endLocation.lng();
+    this._Map.dragMarker(index, { lat: this.Model.Markers[index].Position.lat, lng: this.Model.Markers[index].Position.lng }).subscribe(
       (result) => {
         if (result.success) {
           console.log("Request success");
-          this.Model.Markers[index].Position.lat = endLocation.lat();
-          this.Model.Markers[index].Position.lng = endLocation.lng();
         }
         else {
           console.log("Request error");
-          this.Model.MapMarkers[index].setPosition(new google.maps.LatLng(this.Model.Markers[index].Position.lat, this.Model.Markers[index].Position.lng));
         }
       }
     );
@@ -470,6 +471,10 @@ export class MarkerEditDialog {
 }
 
 
+
+
+
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.info.component.html',
@@ -489,6 +494,10 @@ export class infoButtonDialog {
     this.dialogRef.close();
   }
 }
+
+
+
+
 
 
 @Component({

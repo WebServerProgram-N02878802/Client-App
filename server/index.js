@@ -14,26 +14,26 @@ app
     //BODY PARSER
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: false }))
-    .use('/', (req, res, next) => {
+    .use("/", (req, res, next) => {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "*");
         next();      
     })
 
     //STATIC DIRECTORIES
-    .use('/', express.static(path.join(__dirname, "../dist/")))//webpack files
-    .use('/', express.static(path.join(__dirname, "../public/")))//map overlay image
-    .use('/', express.static(path.join(__dirname, "../public/marker/images/")))//marker images
-    .use('/', express.static(path.join(__dirname, "../public/marker/icons/")))//marker icons
-    .use('/', express.static(path.join(__dirname, "../public/marker/markericon/")))//marker icons
-    .use('/', express.static(path.join(__dirname, "../public/marker/audio/")))//marker audio
+    .use("/", express.static(path.join(__dirname, "../dist/")))//webpack files
+    .use("/", express.static(path.join(__dirname, "../public/")))//map overlay image
+    .use("/", express.static(path.join(__dirname, "../public/marker/images/")))//marker images
+    .use("/", express.static(path.join(__dirname, "../public/marker/icons/")))//marker icons
+    .use("/", express.static(path.join(__dirname, "../public/marker/markericon/")))//marker icons
+    .use("/", express.static(path.join(__dirname, "../public/marker/audio/")))//marker audio
 
     //CONTROLLERS
     .use('/map', map)
     .use('/login', login)
 
     //DEFUALT
-    .use('/', (req, res, next) => {
+    .use("/", (req, res, next) => {
         res.sendFile(path.join(__dirname, "../dist/index.html"));
     })
     .listen(port, function (){

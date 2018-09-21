@@ -4,7 +4,7 @@
   "newProjectRoot": "projects",
   "projects": {
     "client-app": {
-      "root": "",
+      "root": "cs.newpaltz.edu/p/f18-01",
       "projectType": "application",
       "architect": {
         "build": {
